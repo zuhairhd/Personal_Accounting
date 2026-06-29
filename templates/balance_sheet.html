@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Net Worth Statement{% endblock %}
+{% block page_title %}Net Worth Statement{% endblock %}
+{% block page_subtitle %}Personal Balance Sheet — {{ now.strftime('%d %b %Y') }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('export_balance_sheet') }}" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-download"></i> Export CSV
+</a>
+<button onclick="window.print()" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-printer"></i> Print
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Net Worth Banner -->
+<div class="alert {% if net_worth >= 0 %}alert-success{% else %}alert-danger{% endif %} d-flex align-items-center gap-2 mb-3">
+  <i class="bi bi-piggy-bank-fill fs-4"></i>
+  <div>
+    <strong>Net Worth: {{ omr(net_worth) }}</strong>
+    <span class="ms-2 small text-muted">(Total Assets − Total Liabilities)</span>
+  </div>
+  <span class="ms-auto badge {% if balanced %}bg-success{% else %}bg-danger{% endif %}">
+    {% if balanced %}Balanced ✓{% else %}NOT Balanced ✗{% endif %}
+  </span>
+</div>
+
+<div class="row g-3">
+  <!-- ASSETS -->
+  <div class="col-lg-6">
+    <div class="table-card">
+      <div class="report-section-header" style="border-radius:4px 4px 0 0">ASSETS</div>
+      <table class="table table-sm mb-0">
+        <tbody>
+          {% for row in asset_rows %}
+          <tr>
+            <td class="small text-muted ps-3">{{ row.account.code }}</td>
+            <td class="ps-3">{{ row.account.name }}</td>
+            <td class="text-end amount amount-credit">{{ '%.3f'|format(row.balance|float) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" class="text-muted small ps-3">No assets.</td></tr>
+          {% endfor %}
+          <tr class="report-total-row">
+            <td colspan="2" class="text-end fw-bold">Total Assets</td>
+            <td class="text-end amount fw-bold">{{ omr(total_assets) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LIABILITIES + EQUITY -->
+  <div class="col-lg-6">
+    <div class="table-card mb-3">
+      <div class="report-section-header" style="border-radius:4px 4px 0 0">LIABILITIES</div>
+      <table class="table table-sm mb-0">
+        <tbody>
+          {% for row in liab_rows %}
+          <tr>
+            <td class="small text-muted ps-3">{{ row.account.code }}</td>
+            <td class="ps-3">{{ row.account.name }}</td>
+            <td class="text-end amount amount-debit">{{ '%.3f'|format(row.balance|float) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" class="text-muted small ps-3">No liabilities.</td></tr>
+          {% endfor %}
+          <tr class="report-total-row">
+            <td colspan="2" class="text-end fw-bold">Total Liabilities</td>
+            <td class="text-end amount fw-bold">{{ omr(total_liab) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-card">
+      <div class="report-section-header" style="border-radius:4px 4px 0 0">EQUITY (Personal Capital)</div>
+      <table class="table table-sm mb-0">
+        <tbody>
+          {% for row in equity_rows %}
+          <tr>
+            <td class="small text-muted ps-3">{{ row.account.code }}</td>
+            <td class="ps-3">{{ row.account.name }}</td>
+            <td class="text-end amount">{{ '%.3f'|format(row.balance|float) }}</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td class="small text-muted ps-3"></td>
+            <td class="ps-3">Current Year Surplus / Deficit</td>
+            <td class="text-end amount {% if surplus >= 0 %}amount-credit{% else %}amount-debit{% endif %}">
+              {{ '%.3f'|format(surplus|float) }}
+            </td>
+          </tr>
+          <tr class="report-total-row">
+            <td colspan="2" class="text-end fw-bold">Total Equity</td>
+            <td class="text-end amount fw-bold">{{ omr(total_equity) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-card mt-3">
+      <table class="table table-sm mb-0">
+        <tbody>
+          <tr class="report-grand-total-row">
+            <td class="text-end fw-bold">Total Liabilities + Equity</td>
+            <td class="text-end amount fw-bold">{{ omr(total_liab_equity) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

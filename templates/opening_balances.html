@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Opening Balances{% endblock %}
+{% block page_title %}Opening Balances{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <div class="alert alert-info mb-3">
+      <strong><i class="bi bi-info-circle"></i> Note:</strong>
+      Opening balances are pre-loaded from the Excel file automatically on first startup.
+      Use this form only if you need to add additional opening entries.
+      If debits ≠ credits, the difference is posted to <strong>Opening Balance Capital</strong>.
+    </div>
+    <div class="form-card">
+      <form method="post">
+        <div class="row g-3 mb-3">
+          <div class="col-sm-4">
+            <label class="form-label fw-semibold">Opening Balance Date</label>
+            <input type="date" name="ob_date" class="form-control" value="{{ today }}">
+          </div>
+        </div>
+        <p class="fw-semibold mb-2">Account Balances</p>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th style="width:160px">Amount (OMR)</th>
+                <th style="width:130px">Side</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in accounts %}
+              <tr>
+                <td>
+                  <input type="hidden" name="account_id" value="{{ a.id }}">
+                  {{ a.code }} — {{ a.name }}
+                  <small class="text-muted">({{ a.account_type }})</small>
+                </td>
+                <td>
+                  <input name="amount" type="number" step="0.001" min="0"
+                         class="form-control form-control-sm text-end" placeholder="0.000">
+                </td>
+                <td>
+                  <select name="side" class="form-select form-select-sm">
+                    <option value="{{ 'debit' if a.computed_normal_balance == 'Debit' else 'credit' }}"
+                            selected>
+                      {{ a.computed_normal_balance }} (normal)
+                    </option>
+                    <option value="{{ 'credit' if a.computed_normal_balance == 'Debit' else 'debit' }}">
+                      {{ 'Credit' if a.computed_normal_balance == 'Debit' else 'Debit' }} (contra)
+                    </option>
+                  </select>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg"></i> Record Opening Balances
+          </button>
+          <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="form-card">
+      <h6 class="mb-3">Quick Reference</h6>
+      <table class="table table-sm small">
+        <tbody>
+          <tr><td colspan="2" class="fw-semibold text-muted text-uppercase small pt-2">Assets (Debit)</td></tr>
+          <tr><td>Cash / Bank</td><td class="text-end">Debit</td></tr>
+          <tr><td>Receivables</td><td class="text-end">Debit</td></tr>
+          <tr><td colspan="2" class="fw-semibold text-muted text-uppercase small pt-2">Liabilities (Credit)</td></tr>
+          <tr><td>Loans payable</td><td class="text-end">Credit</td></tr>
+          <tr><td>Visa/Credit card</td><td class="text-end">Credit</td></tr>
+          <tr><td>Sister account</td><td class="text-end">Credit</td></tr>
+          <tr><td colspan="2" class="fw-semibold text-muted text-uppercase small pt-2">Equity (Credit)</td></tr>
+          <tr><td>Capital / Net worth</td><td class="text-end">Credit</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

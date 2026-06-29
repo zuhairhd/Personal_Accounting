@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if entry else 'New' }} Journal Entry{% endblock %}
+{% block page_title %}{{ 'Edit Journal Entry' if entry else 'New Journal Entry' }}{% endblock %}
+
+{% block content %}
+<div class="form-card">
+  <form method="post" id="je-form">
+    <div class="row g-3 mb-3">
+      <div class="col-sm-3">
+        <label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+        <input type="date" name="date" class="form-control"
+               value="{{ entry.date.isoformat() if entry else today }}" required>
+      </div>
+      <div class="col-sm-5">
+        <label class="form-label fw-semibold">Narration <span class="text-danger">*</span></label>
+        <input name="narration" class="form-control"
+               value="{{ entry.narration if entry else '' }}"
+               placeholder="Description of transaction" required>
+      </div>
+      <div class="col-sm-4">
+        <label class="form-label fw-semibold">Person (optional)</label>
+        <select name="person_id" class="form-select">
+          <option value="">— None —</option>
+          {% for p in people %}
+          <option value="{{ p.id }}" {% if entry and entry.person_id == p.id %}selected{% endif %}>
+            {{ p.name }}{% if p.relationship %} ({{ p.relationship }}){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Lines -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0">Journal Lines</h6>
+      <button type="button" class="btn btn-sm btn-outline-primary" onclick="addLine()">
+        <i class="bi bi-plus"></i> Add Line
+      </button>
+    </div>
+
+    <div id="lines-container">
+      {% if entry %}
+        {% for line in entry.lines %}
+        <div class="journal-line-row row g-2 align-items-center">
+          <div class="col-sm-4">
+            <select name="account_id" class="form-select form-select-sm" onchange="recalc()">
+              <option value="">— Select Account —</option>
+              {% for a in accounts %}
+              <option value="{{ a.id }}" {% if line.account_id == a.id %}selected{% endif %}>
+                {{ a.code }} — {{ a.name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-sm-3">
+            <input name="line_desc" class="form-control form-control-sm"
+                   placeholder="Line description" value="{{ line.description or '' }}">
+          </div>
+          <div class="col-sm-2">
+            <input name="debit" type="number" step="0.001" min="0" class="form-control form-control-sm text-end"
+                   placeholder="Debit" value="{{ '%.3f'|format(line.debit|float) if line.debit > 0 else '' }}"
+                   oninput="recalc()">
+          </div>
+          <div class="col-sm-2">
+            <input name="credit" type="number" step="0.001" min="0" class="form-control form-control-sm text-end"
+                   placeholder="Credit" value="{{ '%.3f'|format(line.credit|float) if line.credit > 0 else '' }}"
+                   oninput="recalc()">
+          </div>
+          <div class="col-sm-1 text-end">
+            <button type="button" class="btn btn-sm btn-outline-danger py-0" onclick="removeLine(this)">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Two blank lines for new entry -->
+        <div class="journal-line-row row g-2 align-items-center">
+          <div class="col-sm-4"><select name="account_id" class="form-select form-select-sm" onchange="recalc()">
+            <option value="">— Select Account —</option>
+            {% for a in accounts %}<option value="{{ a.id }}">{{ a.code }} — {{ a.name }}</option>{% endfor %}
+          </select></div>
+          <div class="col-sm-3"><input name="line_desc" class="form-control form-control-sm" placeholder="Line description"></div>
+          <div class="col-sm-2"><input name="debit" type="number" step="0.001" min="0" class="form-control form-control-sm text-end" placeholder="Debit" oninput="recalc()"></div>
+          <div class="col-sm-2"><input name="credit" type="number" step="0.001" min="0" class="form-control form-control-sm text-end" placeholder="Credit" oninput="recalc()"></div>
+          <div class="col-sm-1 text-end"><button type="button" class="btn btn-sm btn-outline-danger py-0" onclick="removeLine(this)"><i class="bi bi-x"></i></button></div>
+        </div>
+        <div class="journal-line-row row g-2 align-items-center">
+          <div class="col-sm-4"><select name="account_id" class="form-select form-select-sm" onchange="recalc()">
+            <option value="">— Select Account —</option>
+            {% for a in accounts %}<option value="{{ a.id }}">{{ a.code }} — {{ a.name }}</option>{% endfor %}
+          </select></div>
+          <div class="col-sm-3"><input name="line_desc" class="form-control form-control-sm" placeholder="Line description"></div>
+          <div class="col-sm-2"><input name="debit" type="number" step="0.001" min="0" class="form-control form-control-sm text-end" placeholder="Debit" oninput="recalc()"></div>
+          <div class="col-sm-2"><input name="credit" type="number" step="0.001" min="0" class="form-control form-control-sm text-end" placeholder="Credit" oninput="recalc()"></div>
+          <div class="col-sm-1 text-end"><button type="button" class="btn btn-sm btn-outline-danger py-0" onclick="removeLine(this)"><i class="bi bi-x"></i></button></div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Balance indicator -->
+    <div class="mt-3 p-2 rounded border d-flex justify-content-between align-items-center" id="balance-bar">
+      <span class="small">Total Debit: <strong id="total-debit">0.000</strong> OMR</span>
+      <span id="balance-status" class="badge">—</span>
+      <span class="small">Total Credit: <strong id="total-credit">0.000</strong> OMR</span>
+    </div>
+
+    <div class="d-flex gap-2 mt-3">
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-check-lg"></i> {{ 'Update Entry' if entry else 'Save Entry' }}
+      </button>
+      {% if entry %}
+      <a href="{{ url_for('journal_entry_detail', entry_id=entry.id) }}" class="btn btn-outline-secondary">Cancel</a>
+      {% else %}
+      <a href="{{ url_for('journal_entries') }}" class="btn btn-outline-secondary">Cancel</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Template for new line -->
+<template id="line-template">
+  <div class="journal-line-row row g-2 align-items-center">
+    <div class="col-sm-4"><select name="account_id" class="form-select form-select-sm" onchange="recalc()">
+      <option value="">— Select Account —</option>
+      {% for a in accounts %}<option value="{{ a.id }}">{{ a.code }} — {{ a.name }}</option>{% endfor %}
+    </select></div>
+    <div class="col-sm-3"><input name="line_desc" class="form-control form-control-sm" placeholder="Line description"></div>
+    <div class="col-sm-2"><input name="debit" type="number" step="0.001" min="0" class="form-control form-control-sm text-end" placeholder="Debit" oninput="recalc()"></div>
+    <div class="col-sm-2"><input name="credit" type="number" step="0.001" min="0" class="form-control form-control-sm text-end" placeholder="Credit" oninput="recalc()"></div>
+    <div class="col-sm-1 text-end"><button type="button" class="btn btn-sm btn-outline-danger py-0" onclick="removeLine(this)"><i class="bi bi-x"></i></button></div>
+  </div>
+</template>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function addLine() {
+  const tpl = document.getElementById('line-template');
+  const clone = tpl.content.cloneNode(true);
+  document.getElementById('lines-container').appendChild(clone);
+}
+
+function removeLine(btn) {
+  const row = btn.closest('.journal-line-row');
+  const container = document.getElementById('lines-container');
+  if (container.querySelectorAll('.journal-line-row').length > 2) {
+    row.remove();
+    recalc();
+  } else {
+    alert('A journal entry needs at least 2 lines.');
+  }
+}
+
+function recalc() {
+  const debits  = document.querySelectorAll('input[name="debit"]');
+  const credits = document.querySelectorAll('input[name="credit"]');
+  let totalD = 0, totalC = 0;
+  debits.forEach(i  => { totalD += parseFloat(i.value) || 0; });
+  credits.forEach(i => { totalC += parseFloat(i.value) || 0; });
+
+  document.getElementById('total-debit').textContent  = totalD.toFixed(3);
+  document.getElementById('total-credit').textContent = totalC.toFixed(3);
+
+  const bar = document.getElementById('balance-bar');
+  const status = document.getElementById('balance-status');
+  if (Math.abs(totalD - totalC) < 0.001) {
+    bar.className = 'mt-3 p-2 rounded border d-flex justify-content-between align-items-center border-success bg-success-subtle';
+    status.className = 'badge bg-success';
+    status.textContent = '✓ Balanced';
+  } else {
+    bar.className = 'mt-3 p-2 rounded border d-flex justify-content-between align-items-center border-danger bg-danger-subtle';
+    status.className = 'badge bg-danger';
+    const diff = Math.abs(totalD - totalC).toFixed(3);
+    status.textContent = 'Not Balanced — diff ' + diff;
+  }
+}
+recalc();
+</script>
+{% endblock %}

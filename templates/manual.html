@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% block title %}User Manual{% endblock %}
+{% block page_title %}User Manual{% endblock %}
+{% block page_subtitle %}Personal Finance Accounting Template — Quick Reference{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 flex-wrap mb-3 no-print">
+  <a href="#s1"  class="btn btn-sm btn-outline-secondary">Overview</a>
+  <a href="#s2"  class="btn btn-sm btn-outline-secondary">Double-Entry</a>
+  <a href="#s3"  class="btn btn-sm btn-outline-secondary">Accounts</a>
+  <a href="#s4"  class="btn btn-sm btn-outline-secondary">Opening Balances</a>
+  <a href="#s5"  class="btn btn-sm btn-outline-secondary">Transactions</a>
+  <a href="#s6"  class="btn btn-sm btn-outline-secondary">Credit Cards</a>
+  <a href="#s7"  class="btn btn-sm btn-outline-secondary">Loans</a>
+  <a href="#s8"  class="btn btn-sm btn-outline-secondary">Reports</a>
+  <a href="#s9"  class="btn btn-sm btn-outline-secondary">Month-End</a>
+  <a href="#s10" class="btn btn-sm btn-outline-secondary">Reset &amp; Backup</a>
+</div>
+
+<div class="accordion" id="manualAccordion">
+
+  <!-- Section 1 -->
+  <div class="accordion-item" id="s1">
+    <h2 class="accordion-header">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#c1">
+        1. What This App Is — Clean Empty Template
+      </button>
+    </h2>
+    <div id="c1" class="accordion-collapse collapse show" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <p>This is a <strong>reusable personal finance accounting template</strong>. It starts completely empty — no transactions, no personal data, no imported balances. Anyone can use it to track:</p>
+        <ul>
+          <li>Bank accounts and wallet cash</li>
+          <li>Credit card balances and payments</li>
+          <li>Income (salary, freelance, rental, etc.)</li>
+          <li>Expenses (food, rent, utilities, education, etc.)</li>
+          <li>Loans given and received</li>
+          <li>Net worth over time</li>
+        </ul>
+        <div class="alert alert-info mt-2 small mb-0">
+          <strong>This template contains no private data.</strong>
+          It uses a built-in default chart of accounts only. All data you enter stays in your local database file.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="accordion-item" id="s2">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c2">
+        2. Double-Entry Accounting — How It Works
+      </button>
+    </h2>
+    <div id="c2" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <p><strong>Every transaction affects at least two accounts. Total Debit must always equal Total Credit.</strong></p>
+
+        <table class="table table-sm table-bordered small">
+          <thead><tr><th>Account Type</th><th>Normal Balance</th><th>Increases With</th><th>Decreases With</th></tr></thead>
+          <tbody>
+            <tr><td>Asset</td><td>Debit</td><td>Debit</td><td>Credit</td></tr>
+            <tr><td>Liability</td><td>Credit</td><td>Credit</td><td>Debit</td></tr>
+            <tr><td>Equity</td><td>Credit</td><td>Credit</td><td>Debit</td></tr>
+            <tr><td>Income</td><td>Credit</td><td>Credit</td><td>Debit</td></tr>
+            <tr><td>Expense</td><td>Debit</td><td>Debit</td><td>Credit</td></tr>
+          </tbody>
+        </table>
+
+        <h6>Simple Example: Receive Salary</h6>
+        <table class="table table-sm table-bordered small">
+          <thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Bank Account 1 (Asset)</td><td>500.000</td><td></td></tr>
+            <tr><td>Salary Income (Income)</td><td></td><td>500.000</td></tr>
+          </tbody>
+        </table>
+
+        <h6>Simple Example: Pay Food Expense</h6>
+        <table class="table table-sm table-bordered small">
+          <thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Food and Groceries (Expense)</td><td>25.000</td><td></td></tr>
+            <tr><td>Wallet Cash (Asset)</td><td></td><td>25.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="accordion-item" id="s3">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c3">
+        3. Chart of Accounts — Default Accounts
+      </button>
+    </h2>
+    <div id="c3" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <p>The system comes with a default chart of accounts covering common personal finance needs. You can rename, edit, add, or deactivate any account.</p>
+        <table class="table table-sm table-bordered small">
+          <thead><tr><th>Range</th><th>Type</th><th>Examples</th></tr></thead>
+          <tbody>
+            <tr><td>1000–1999</td><td>Asset</td><td>Wallet Cash, Bank Account 1, Savings, Loans to Others</td></tr>
+            <tr><td>2000–2999</td><td>Liability</td><td>Credit Card 1, Loan from Family, Accounts Payable</td></tr>
+            <tr><td>3000–3999</td><td>Equity</td><td>Opening Balance / Personal Capital, Net Worth</td></tr>
+            <tr><td>4000–4999</td><td>Income</td><td>Salary, Freelance, Rental, Other Income</td></tr>
+            <tr><td>5000–5999</td><td>Expense</td><td>Food, Rent, Electricity, Mobile, Medical, Education</td></tr>
+          </tbody>
+        </table>
+        <p class="small text-muted mb-0">To customize accounts: go to <strong>Chart of Accounts → Edit</strong> any account, or click <strong>New Account</strong> to add your own.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="accordion-item" id="s4">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c4">
+        4. Opening Balances — How to Start
+      </button>
+    </h2>
+    <div id="c4" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <p>Opening balances are the amounts in your accounts before you start using the system. Enter them once at the beginning.</p>
+        <p>Go to <strong>Opening Balances</strong> in the sidebar. Enter the starting amount for each account and choose Debit or Credit:</p>
+        <table class="table table-sm table-bordered small">
+          <thead><tr><th>Account</th><th>Opening Side</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Bank Account 1 (Asset)</td><td>Debit</td><td>300.000</td></tr>
+            <tr><td>Wallet Cash (Asset)</td><td>Debit</td><td>50.000</td></tr>
+            <tr><td>Credit Card 1 (Liability)</td><td>Credit</td><td>200.000</td></tr>
+            <tr><td>Loan from Family (Liability)</td><td>Credit</td><td>500.000</td></tr>
+            <tr><td>Opening Balance / Personal Capital</td><td>Auto-balanced</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p class="small text-muted mb-0">The system auto-balances using the <strong>Opening Balance / Personal Capital</strong> account if totals don't match. After saving, check Trial Balance — it should show Balanced ✓.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5 -->
+  <div class="accordion-item" id="s5">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c5">
+        5. Recording Daily Transactions
+      </button>
+    </h2>
+    <div id="c5" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <p>Go to <strong>Journal Entries → New Entry</strong>. Add at least two lines. The balance bar must show ✓ before saving.</p>
+        <h6>Common Transactions</h6>
+        <table class="table table-sm table-bordered small">
+          <thead><tr><th>Transaction</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Salary into bank</td><td>Bank Account 1</td><td>Salary Income</td></tr>
+            <tr><td>Grocery shopping (cash)</td><td>Food and Groceries</td><td>Wallet Cash</td></tr>
+            <tr><td>Pay electricity bill (bank)</td><td>Electricity and Water</td><td>Bank Account 1</td></tr>
+            <tr><td>Pay rent (bank)</td><td>Rent / Housing</td><td>Bank Account 1</td></tr>
+            <tr><td>Withdraw cash from bank</td><td>Wallet Cash</td><td>Bank Account 1</td></tr>
+            <tr><td>Deposit cash to bank</td><td>Bank Account 1</td><td>Wallet Cash</td></tr>
+            <tr><td>Lend money to someone</td><td>Loans to Others</td><td>Bank Account 1</td></tr>
+            <tr><td>Someone repays loan to you</td><td>Bank Account 1</td><td>Loans to Others</td></tr>
+          </tbody>
+        </table>
+        <p class="small text-muted mb-0">Reference format: <code>PJ-2026-0001</code> (auto-generated, year and sequential).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6 -->
+  <div class="accordion-item" id="s6">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c6">
+        6. Credit Card Transactions
+      </button>
+    </h2>
+    <div id="c6" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <p>Credit cards are <strong>liability accounts</strong>. When you spend, the liability grows. When you pay the bill, the liability shrinks.</p>
+        <h6>Charging a Purchase to Credit Card 1</h6>
+        <table class="table table-sm table-bordered small mb-3">
+          <thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Food and Groceries</td><td>35.000</td><td></td></tr>
+            <tr><td>Credit Card 1</td><td></td><td>35.000</td></tr>
+          </tbody>
+        </table>
+        <h6>Paying the Credit Card Bill from Bank</h6>
+        <table class="table table-sm table-bordered small">
+          <thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Credit Card 1</td><td>150.000</td><td></td></tr>
+            <tr><td>Bank Account 1</td><td></td><td>150.000</td></tr>
+          </tbody>
+        </table>
+        <div class="alert alert-warning mt-2 small mb-0">
+          Paying a credit card bill is <strong>NOT</strong> an expense — the expense was already recorded when you made the purchase. The payment just settles the liability.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 7 -->
+  <div class="accordion-item" id="s7">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c7">
+        7. Loans — Borrowing and Lending
+      </button>
+    </h2>
+    <div id="c7" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <h6>Borrow from Family (Loan from Family — Liability)</h6>
+        <table class="table table-sm table-bordered small mb-3">
+          <thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Bank Account 1</td><td>500.000</td><td></td></tr>
+            <tr><td>Loan from Family</td><td></td><td>500.000</td></tr>
+          </tbody>
+        </table>
+        <h6>Repay the Loan</h6>
+        <table class="table table-sm table-bordered small mb-3">
+          <thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Loan from Family</td><td>100.000</td><td></td></tr>
+            <tr><td>Bank Account 1</td><td></td><td>100.000</td></tr>
+          </tbody>
+        </table>
+        <h6>Lend Money to Someone (Loans to Others — Asset)</h6>
+        <table class="table table-sm table-bordered small mb-3">
+          <thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Loans to Others</td><td>200.000</td><td></td></tr>
+            <tr><td>Bank Account 1</td><td></td><td>200.000</td></tr>
+          </tbody>
+        </table>
+        <h6>Someone Repays You</h6>
+        <table class="table table-sm table-bordered small">
+          <thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead>
+          <tbody>
+            <tr><td>Bank Account 1</td><td>200.000</td><td></td></tr>
+            <tr><td>Loans to Others</td><td></td><td>200.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 8 -->
+  <div class="accordion-item" id="s8">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c8">
+        8. Understanding Reports
+      </button>
+    </h2>
+    <div id="c8" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <h6>Trial Balance</h6>
+        <p class="small">Lists all accounts with non-zero balances. Total Debit must equal Total Credit. Shows <strong>Balanced ✓</strong> when correct.</p>
+
+        <h6>General Ledger</h6>
+        <p class="small">Select any account to see all its transactions with a running balance. Good for tracing the history of a bank account or expense.</p>
+
+        <h6>Income &amp; Expense Statement</h6>
+        <p class="small">Shows all income accounts and expense accounts. Bottom line is <strong>Surplus</strong> (income &gt; expenses) or <strong>Deficit</strong> (expenses &gt; income).</p>
+
+        <h6>Net Worth Statement (Balance Sheet)</h6>
+        <p class="small">Shows Assets, Liabilities, and Equity. <strong>Net Worth = Total Assets − Total Liabilities</strong>. Positive = you own more than you owe.</p>
+
+        <h6>Expenses by Category</h6>
+        <p class="small">Ranks all expense accounts by amount with percentage of total. Shows where your money goes.</p>
+
+        <h6>Transactions by Date</h6>
+        <p class="small">All entries in chronological order grouped by day. Useful for reviewing a specific week or month.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 9 -->
+  <div class="accordion-item" id="s9">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c9">
+        9. Month-End Checklist
+      </button>
+    </h2>
+    <div id="c9" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <ol>
+          <li>Enter all transactions for the month.</li>
+          <li>Check <strong>Trial Balance</strong> — must show Balanced ✓.</li>
+          <li>Review <strong>Expenses by Category</strong> — identify overspending.</li>
+          <li>Check <strong>Income &amp; Expense Statement</strong> — confirm surplus or deficit.</li>
+          <li>Reconcile each bank account via <strong>Bank Reconciliation</strong>.</li>
+          <li>Review <strong>Net Worth Statement</strong> — is net worth improving?</li>
+          <li>Export reports to CSV and save for your records.</li>
+          <li>Back up <code>personal_template.db</code>.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 10 -->
+  <div class="accordion-item" id="s10">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c10">
+        10. Reset Data &amp; Backup
+      </button>
+    </h2>
+    <div id="c10" class="accordion-collapse collapse" data-bs-parent="#manualAccordion">
+      <div class="accordion-body">
+        <h6>Backup</h6>
+        <p class="small">All your data is in <code>personal_template.db</code>. Copy this file to a safe location regularly:</p>
+        <pre class="bg-light p-2 rounded small">copy C:\dev\Personal_Accounting_Template\personal_template.db C:\Backup\personal_template_backup.db</pre>
+
+        <h6>Reset to Default Template</h6>
+        <p class="small">Go to <strong>Admin → Reset Data</strong> in the sidebar. This deletes all transactions, people, reconciliations, and accounts, then restores the default 50-account chart of accounts. Type <code>RESET</code> to confirm.</p>
+        <div class="alert alert-danger small mb-0">
+          <strong>Reset is permanent.</strong> Always back up your database before resetting.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mt-3 text-muted small">
+  <strong>App URL:</strong> http://127.0.0.1:4444 &nbsp;|&nbsp;
+  <strong>Database:</strong> personal_template.db &nbsp;|&nbsp;
+  <strong>Currency:</strong> OMR (3 decimal places) &nbsp;|&nbsp;
+  <strong>Reference format:</strong> PJ-YYYY-0001
+</div>
+{% endblock %}

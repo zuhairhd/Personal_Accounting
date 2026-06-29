@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Expenses by Category{% endblock %}
+{% block page_title %}Expenses by Category{% endblock %}
+
+{% block topbar_actions %}
+<button onclick="window.print()" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-printer"></i> Print
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="table-card mb-3 no-print">
+  <div class="px-3 py-2">
+    <form method="get" class="d-flex gap-2 flex-wrap align-items-center">
+      <label class="small mb-0">From:</label>
+      <input name="from_date" type="date" class="form-control form-control-sm" value="{{ from_date }}" style="width:140px">
+      <label class="small mb-0">To:</label>
+      <input name="to_date" type="date" class="form-control form-control-sm" value="{{ to_date }}" style="width:140px">
+      <button class="btn btn-sm btn-secondary">Apply</button>
+      {% if from_date or to_date %}
+      <a href="{{ url_for('expenses_by_category') }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="table-card">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th style="width:80px">Code</th>
+        <th>Category</th>
+        <th class="text-end">Amount (OMR)</th>
+        <th class="text-end">% of Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td class="small text-muted">{{ row.account.code }}</td>
+        <td>{{ row.account.name }}</td>
+        <td class="text-end amount amount-debit">{{ '%.3f'|format(row.balance|float) }}</td>
+        <td class="text-end small text-muted">
+          {% if grand_total > 0 %}
+          {{ '%.1f'|format((row.balance / grand_total * 100)|float) }}%
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="text-center text-muted py-4">No expenses found for this period.</td></tr>
+      {% endfor %}
+    </tbody>
+    {% if rows %}
+    <tfoot>
+      <tr class="report-grand-total-row">
+        <td colspan="2" class="text-end fw-bold">TOTAL EXPENSES</td>
+        <td class="text-end amount fw-bold">{{ omr(grand_total) }}</td>
+        <td class="text-end">100%</td>
+      </tr>
+    </tfoot>
+    {% endif %}
+  </table>
+</div>
+{% endblock %}

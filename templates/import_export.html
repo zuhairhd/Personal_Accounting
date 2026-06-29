@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Import / Export{% endblock %}
+{% block page_title %}Import / Export{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Export -->
+  <div class="col-lg-8">
+    <div class="form-card">
+      <h5 class="mb-3"><i class="bi bi-download text-success"></i> Export Data (CSV)</h5>
+      <p class="text-muted small mb-3">Download any report or data set as a CSV file that can be opened in Excel or any spreadsheet application.</p>
+
+      <div class="list-group list-group-flush">
+        <div class="list-group-item px-0">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Chart of Accounts</strong>
+              <p class="text-muted small mb-0">All accounts with codes, types, descriptions, and status</p>
+            </div>
+            <a href="{{ url_for('export_accounts') }}" class="btn btn-sm btn-outline-success">
+              <i class="bi bi-download"></i> Download
+            </a>
+          </div>
+        </div>
+        <div class="list-group-item px-0">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Journal Entries</strong>
+              <p class="text-muted small mb-0">All transactions with every debit and credit line</p>
+            </div>
+            <a href="{{ url_for('export_journal_entries') }}" class="btn btn-sm btn-outline-success">
+              <i class="bi bi-download"></i> Download
+            </a>
+          </div>
+        </div>
+        <div class="list-group-item px-0">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Trial Balance</strong>
+              <p class="text-muted small mb-0">Current account balances in debit and credit columns</p>
+            </div>
+            <a href="{{ url_for('export_trial_balance') }}" class="btn btn-sm btn-outline-success">
+              <i class="bi bi-download"></i> Download
+            </a>
+          </div>
+        </div>
+        <div class="list-group-item px-0">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Income &amp; Expense Statement</strong>
+              <p class="text-muted small mb-0">All income and expenses with surplus/deficit summary</p>
+            </div>
+            <a href="{{ url_for('export_income_expense') }}" class="btn btn-sm btn-outline-success">
+              <i class="bi bi-download"></i> Download
+            </a>
+          </div>
+        </div>
+        <div class="list-group-item px-0">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Net Worth Statement (Balance Sheet)</strong>
+              <p class="text-muted small mb-0">Assets, liabilities, equity and net worth</p>
+            </div>
+            <a href="{{ url_for('export_balance_sheet') }}" class="btn btn-sm btn-outline-success">
+              <i class="bi bi-download"></i> Download
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="col-lg-4">
+    <div class="form-card">
+      <h6><i class="bi bi-info-circle text-primary"></i> About This Template</h6>
+      <p class="small text-muted">
+        This is a clean, empty personal accounting template. All data you enter is stored locally in
+        <code>personal_template.db</code>.
+      </p>
+      <p class="small text-muted">
+        No external Excel files are required. The default chart of accounts is built in.
+      </p>
+      <hr>
+      <h6><i class="bi bi-arrow-counterclockwise text-danger"></i> Reset</h6>
+      <p class="small text-muted">
+        To clear all data and start fresh, use the
+        <a href="{{ url_for('admin_reset') }}" class="text-danger">Reset Data</a> page in the sidebar.
+      </p>
+      <hr>
+      <h6><i class="bi bi-floppy text-warning"></i> Backup</h6>
+      <p class="small text-muted mb-0">
+        To back up your data, copy <code>personal_template.db</code> to a safe location.
+        All your transactions and accounts are in this single file.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

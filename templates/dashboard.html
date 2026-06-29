@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Personal Finance Template — {{ now.strftime('%d %b %Y') }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('journal_entry_new') }}" class="btn btn-sm btn-primary">
+  <i class="bi bi-plus-lg"></i> New Entry
+</a>
+{% endblock %}
+
+{% block content %}
+
+{% if entry_count == 0 %}
+<!-- Getting Started Banner -->
+<div class="alert alert-info d-flex align-items-start gap-3 mb-3">
+  <i class="bi bi-info-circle-fill fs-4 mt-1 flex-shrink-0"></i>
+  <div>
+    <strong>Welcome to the Personal Finance Accounting Template</strong><br>
+    This is a clean, empty system ready for your data. No personal transactions or balances are included.
+    <div class="mt-2 d-flex gap-2 flex-wrap">
+      <a href="{{ url_for('accounts') }}" class="btn btn-sm btn-outline-primary">1. Review Accounts</a>
+      <a href="{{ url_for('opening_balances') }}" class="btn btn-sm btn-outline-primary">2. Enter Opening Balances</a>
+      <a href="{{ url_for('journal_entry_new') }}" class="btn btn-sm btn-outline-primary">3. Start Recording</a>
+      <a href="{{ url_for('manual') }}" class="btn btn-sm btn-outline-secondary">Read Manual</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Net Worth Banner -->
+<div class="alert {% if net_worth > 0 %}alert-success{% elif net_worth < 0 %}alert-danger{% else %}alert-secondary{% endif %} d-flex align-items-center gap-2 mb-3">
+  <i class="bi {% if net_worth > 0 %}bi-graph-up-arrow{% elif net_worth < 0 %}bi-graph-down-arrow{% else %}bi-dash-circle{% endif %} fs-4"></i>
+  <div>
+    <strong>Net Worth: {{ omr(net_worth) }}</strong>
+    <span class="ms-2 text-muted small">Total Assets − Total Liabilities</span>
+  </div>
+  <span class="ms-auto badge {% if tb_balanced %}bg-success{% else %}bg-danger{% endif %}">
+    {% if tb_balanced %}Trial Balance: Balanced ✓{% else %}Trial Balance: NOT Balanced ✗{% endif %}
+  </span>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-3">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card position-relative">
+      <div class="card-body">
+        <p class="card-title">Total Assets</p>
+        <p class="stat-amount text-primary">{{ omr(total_assets) }}</p>
+        <i class="bi bi-building stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card position-relative">
+      <div class="card-body">
+        <p class="card-title">Total Liabilities</p>
+        <p class="stat-amount text-danger">{{ omr(total_liab) }}</p>
+        <i class="bi bi-credit-card stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card position-relative">
+      <div class="card-body">
+        <p class="card-title">Total Income</p>
+        <p class="stat-amount text-success">{{ omr(total_income) }}</p>
+        <i class="bi bi-arrow-down-circle stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card position-relative">
+      <div class="card-body">
+        <p class="card-title">Total Expenses</p>
+        <p class="stat-amount text-warning">{{ omr(total_exp) }}</p>
+        <i class="bi bi-arrow-up-circle stat-icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card position-relative">
+      <div class="card-body">
+        <p class="card-title">Surplus / Deficit</p>
+        <p class="stat-amount {% if surplus > 0 %}text-success{% elif surplus < 0 %}text-danger{% else %}text-muted{% endif %}">
+          {{ omr(surplus) }}
+        </p>
+        <i class="bi bi-calculator stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card position-relative">
+      <div class="card-body">
+        <p class="card-title">Accounts</p>
+        <p class="stat-amount text-secondary">{{ account_count }}</p>
+        <i class="bi bi-list-ul stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card position-relative">
+      <div class="card-body">
+        <p class="card-title">Journal Entries</p>
+        <p class="stat-amount text-secondary">{{ entry_count }}</p>
+        <i class="bi bi-journal-text stat-icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Bank & Cash / Credit Cards -->
+  <div class="col-lg-5">
+    {% if bank_cash %}
+    <div class="table-card mb-3">
+      <div class="px-3 py-2 border-bottom">
+        <strong class="small text-uppercase text-muted">Bank &amp; Cash Balances</strong>
+      </div>
+      <table class="table table-sm mb-0">
+        <tbody>
+          {% for row in bank_cash %}
+          <tr>
+            <td class="small text-muted">{{ row.account.code }}</td>
+            <td>{{ row.account.name }}</td>
+            <td class="text-end amount {% if row.balance >= 0 %}amount-credit{% else %}amount-debit{% endif %}">
+              {{ omr(row.balance) }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {% if credit_cards %}
+    <div class="table-card">
+      <div class="px-3 py-2 border-bottom">
+        <strong class="small text-uppercase text-muted">Credit Cards</strong>
+      </div>
+      <table class="table table-sm mb-0">
+        <tbody>
+          {% for row in credit_cards %}
+          <tr>
+            <td class="small text-muted">{{ row.account.code }}</td>
+            <td>{{ row.account.name }}</td>
+            <td class="text-end amount amount-debit">{{ omr(row.balance) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {% if not bank_cash and not credit_cards %}
+    <div class="alert alert-light border text-center small py-4">
+      <i class="bi bi-bank2 fs-3 d-block text-muted mb-2"></i>
+      No balances yet. <a href="{{ url_for('opening_balances') }}">Enter opening balances</a> to begin.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Entries -->
+  <div class="col-lg-7">
+    <div class="table-card">
+      <div class="px-3 py-2 d-flex justify-content-between align-items-center border-bottom">
+        <strong class="small text-uppercase text-muted">Recent Journal Entries</strong>
+        <a href="{{ url_for('journal_entry_new') }}" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-plus"></i> New
+        </a>
+      </div>
+      <table class="table table-sm mb-0">
+        <thead><tr>
+          <th>Date</th><th>Ref</th><th>Narration</th><th class="text-end">Amount</th>
+        </tr></thead>
+        <tbody>
+          {% for je in recent %}
+          <tr>
+            <td class="text-nowrap small">{{ je.date.strftime('%d %b %Y') }}</td>
+            <td><a href="{{ url_for('journal_entry_detail', entry_id=je.id) }}" class="text-decoration-none small">{{ je.reference }}</a></td>
+            <td class="text-truncate" style="max-width:180px">{{ je.narration }}</td>
+            <td class="text-end amount">{{ omr(je.total_debit) }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="text-center text-muted small py-4">
+              No entries yet.
+              <a href="{{ url_for('journal_entry_new') }}">Create your first entry →</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if recent %}
+      <div class="px-3 py-2 text-end">
+        <a href="{{ url_for('journal_entries') }}" class="small text-primary">View all entries →</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

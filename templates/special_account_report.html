@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block topbar_actions %}
+<button onclick="window.print()" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-printer"></i> Print
+</button>
+{% endblock %}
+
+{% block content %}
+{% if not account %}
+<div class="alert alert-warning">
+  <strong>Account not found.</strong>
+  Please make sure the relevant account exists in the Chart of Accounts.
+  <a href="{{ url_for('accounts') }}" class="btn btn-sm btn-outline-secondary ms-2">View Accounts</a>
+</div>
+{% else %}
+
+<div class="table-card mb-3 no-print">
+  <div class="px-3 py-2">
+    <form method="get" class="d-flex gap-2 flex-wrap align-items-center">
+      <label class="small mb-0">From:</label>
+      <input name="from_date" type="date" class="form-control form-control-sm" value="{{ from_date }}" style="width:140px">
+      <label class="small mb-0">To:</label>
+      <input name="to_date" type="date" class="form-control form-control-sm" value="{{ to_date }}" style="width:140px">
+      <button class="btn btn-sm btn-secondary">Apply</button>
+      {% if from_date or to_date %}
+      <a href="{{ url_for(route_name) }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="px-3 py-2 border-bottom">
+    <strong>{{ account.code }} — {{ account.name }}</strong>
+    <span class="badge badge-{{ account.account_type.lower() }} ms-2">{{ account.account_type }}</span>
+    <span class="badge bg-light text-dark ms-1">Normal: {{ account.computed_normal_balance }}</span>
+    <span class="ms-3 small text-muted">Current Balance: <strong>{{ omr(closing_balance) }}</strong></span>
+  </div>
+
+  <table class="table table-sm mb-0">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Reference</th>
+        <th>Narration / Description</th>
+        <th class="text-end">Debit</th>
+        <th class="text-end">Credit</th>
+        <th class="text-end">Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if from_date %}
+      <tr class="table-light">
+        <td colspan="5" class="text-muted small">Opening Balance</td>
+        <td class="text-end amount fw-semibold">{{ '%.3f'|format(opening_balance|float) }}</td>
+      </tr>
+      {% endif %}
+      {% for row in ledger_rows %}
+      <tr>
+        <td class="text-nowrap small">{{ row.date.strftime('%d %b %Y') }}</td>
+        <td class="small">{{ row.reference }}</td>
+        <td class="small">
+          {{ row.narration }}
+          {% if row.description %}<span class="text-muted"> · {{ row.description }}</span>{% endif %}
+        </td>
+        <td class="text-end amount {% if row.debit > 0 %}amount-debit{% else %}amount-zero{% endif %}">
+          {{ '%.3f'|format(row.debit|float) if row.debit > 0 else '—' }}
+        </td>
+        <td class="text-end amount {% if row.credit > 0 %}amount-credit{% else %}amount-zero{% endif %}">
+          {{ '%.3f'|format(row.credit|float) if row.credit > 0 else '—' }}
+        </td>
+        <td class="text-end amount fw-semibold">{{ '%.3f'|format(row.balance|float) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-3">No transactions for this account.</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="report-grand-total-row">
+        <td colspan="5" class="text-end fw-bold">CLOSING BALANCE</td>
+        <td class="text-end amount fw-bold">{{ omr(closing_balance) }}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,285 @@
+:root {
+    --sidebar-width: 260px;
+    --primary-color: #2c6fad;
+    --sidebar-bg: #1a2c42;
+    --sidebar-text: #cbd5e1;
+    --sidebar-active: #3b82f6;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f0f4f8;
+    margin: 0;
+}
+
+/* ─── SIDEBAR ─── */
+#sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 100;
+    overflow-y: auto;
+    transition: transform 0.25s ease;
+}
+
+#sidebar .sidebar-brand {
+    padding: 1.2rem 1rem 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+#sidebar .sidebar-brand h6 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+#sidebar .sidebar-brand .app-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0.15rem 0 0;
+}
+
+#sidebar .nav-section {
+    padding: 0.6rem 0 0;
+}
+
+#sidebar .nav-section-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #64748b;
+    padding: 0.4rem 1rem 0.1rem;
+}
+
+#sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--sidebar-text);
+    padding: 0.45rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+#sidebar .nav-link:hover {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+}
+
+#sidebar .nav-link.active {
+    background: var(--sidebar-active);
+    color: #fff;
+    font-weight: 600;
+}
+
+#sidebar .nav-link .bi {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* ─── MAIN CONTENT ─── */
+#main-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    transition: margin-left 0.25s ease;
+}
+
+.topbar {
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.65rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.topbar-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.topbar-subtitle {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.page-body {
+    padding: 1.5rem;
+}
+
+/* ─── SIDEBAR COLLAPSED ─── */
+body.sidebar-collapsed #sidebar {
+    transform: translateX(calc(-1 * var(--sidebar-width)));
+}
+
+body.sidebar-collapsed #main-content {
+    margin-left: 0;
+}
+
+/* ─── STAT CARDS ─── */
+.stat-card {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.stat-card .card-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #64748b;
+    margin-bottom: 0.3rem;
+}
+
+.stat-card .stat-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.stat-card .stat-icon {
+    font-size: 1.8rem;
+    opacity: 0.15;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* ─── TABLE STYLING ─── */
+.table-card {
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+    background: #fff;
+}
+
+.table-card .table {
+    margin-bottom: 0;
+}
+
+.table-card .table th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 0.6rem 0.75rem;
+}
+
+.table-card .table td {
+    padding: 0.5rem 0.75rem;
+    vertical-align: middle;
+    font-size: 0.875rem;
+}
+
+.table-card .table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* ─── AMOUNTS ─── */
+.amount {
+    font-family: 'Cascadia Code', 'Courier New', monospace;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.amount-debit  { color: #dc2626; }
+.amount-credit { color: #16a34a; }
+.amount-zero   { color: #94a3b8; }
+
+/* ─── BADGES ─── */
+.badge-asset     { background-color: #dbeafe; color: #1d4ed8; }
+.badge-liability { background-color: #fce7f3; color: #9d174d; }
+.badge-equity    { background-color: #d1fae5; color: #065f46; }
+.badge-income    { background-color: #dcfce7; color: #15803d; }
+.badge-expense   { background-color: #fef3c7; color: #92400e; }
+
+/* ─── FORMS ─── */
+.form-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+}
+
+.journal-line-row {
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 0.6rem;
+    margin-bottom: 0.4rem;
+    border: 1px solid #e2e8f0;
+}
+
+/* ─── REPORT SECTIONS ─── */
+.report-section-header {
+    background: #1e293b;
+    color: #fff;
+    padding: 0.4rem 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 0;
+}
+
+.report-total-row {
+    background: #f1f5f9;
+    font-weight: 700;
+    border-top: 2px solid #cbd5e1 !important;
+}
+
+.report-grand-total-row {
+    background: #1e293b;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ─── STATUS BADGES ─── */
+.badge-balanced     { background: #d1fae5; color: #065f46; font-weight: 600; }
+.badge-not-balanced { background: #fee2e2; color: #991b1b; font-weight: 600; }
+.badge-surplus      { background: #dbeafe; color: #1e40af; font-weight: 600; }
+.badge-deficit      { background: #fce7f3; color: #9d174d; font-weight: 600; }
+
+/* ─── PRINT ─── */
+@media print {
+    #sidebar, .topbar, .btn, .no-print { display: none !important; }
+    #main-content { margin-left: 0 !important; }
+    .page-body { padding: 0; }
+    body { background: #fff; }
+    .table-card { box-shadow: none; border: 1px solid #ccc; }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+    #sidebar {
+        transform: translateX(calc(-1 * var(--sidebar-width)));
+    }
+    #main-content {
+        margin-left: 0;
+    }
+    body.sidebar-open #sidebar {
+        transform: translateX(0);
+    }
+}

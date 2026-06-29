@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Reset Data{% endblock %}
+{% block page_title %}Reset to Default Template{% endblock %}
+{% block page_subtitle %}Admin — Danger Zone{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+
+    <!-- Warning Alert -->
+    <div class="alert alert-danger border-2 mb-4">
+      <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Warning — This Cannot Be Undone</h5>
+      <p class="mb-0">
+        This action will <strong>permanently delete all your data</strong> and restore the system to the
+        empty default template. Use this only if you want to start completely fresh.
+      </p>
+    </div>
+
+    <!-- What will be deleted -->
+    <div class="form-card mb-4">
+      <h6 class="mb-3 text-danger"><i class="bi bi-trash3 me-1"></i>What will be deleted:</h6>
+      <table class="table table-sm table-bordered">
+        <tbody>
+          <tr>
+            <td>Journal Lines</td>
+            <td class="text-end fw-semibold">{{ stats.entries }} entries × all their lines</td>
+          </tr>
+          <tr>
+            <td>Journal Entries</td>
+            <td class="text-end fw-semibold">{{ stats.entries }}</td>
+          </tr>
+          <tr>
+            <td>People</td>
+            <td class="text-end fw-semibold">{{ stats.people }}</td>
+          </tr>
+          <tr>
+            <td>Bank Reconciliations</td>
+            <td class="text-end fw-semibold">{{ stats.reconciliations }}</td>
+          </tr>
+          <tr>
+            <td>All Accounts</td>
+            <td class="text-end fw-semibold">{{ stats.accounts }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small text-muted mb-0">
+        <i class="bi bi-check-circle text-success me-1"></i>
+        After reset, the default chart of accounts (50 accounts) will be restored automatically.
+        The database file is kept — only the data inside is cleared.
+      </p>
+    </div>
+
+    <!-- What will NOT be affected -->
+    <div class="alert alert-info mb-4">
+      <h6><i class="bi bi-shield-check me-1"></i>What will NOT be affected:</h6>
+      <ul class="mb-0 small">
+        <li>The database file <code>personal_template.db</code> itself</li>
+        <li>All files in <code>C:\dev\Personal_Accounting_Template</code></li>
+        <li>Any files in other folders on your computer</li>
+        <li>Your other accounting systems (e.g., <code>C:\dev\Account</code>, <code>C:\dev\FSS</code>)</li>
+      </ul>
+    </div>
+
+    <!-- Confirmation Form -->
+    <div class="form-card">
+      <h6 class="mb-3">Confirm Reset</h6>
+      <p class="text-muted small mb-3">
+        To confirm, type <strong>RESET</strong> exactly in the box below and click the button.
+      </p>
+      <form method="post">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Type <code>RESET</code> to confirm:</label>
+          <input name="confirmation" class="form-control" placeholder="Type RESET here"
+                 autocomplete="off" style="max-width:300px">
+        </div>
+        <div class="d-flex gap-3 align-items-center">
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset All Data
+          </button>
+          <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Cancel — Go to Dashboard</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

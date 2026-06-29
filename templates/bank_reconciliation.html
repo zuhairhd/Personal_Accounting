@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Bank Reconciliation{% endblock %}
+{% block page_title %}Bank Reconciliation{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('reconciliation_new') }}" class="btn btn-sm btn-primary">
+  <i class="bi bi-plus-lg"></i> New Reconciliation
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="table-card">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Account</th>
+        <th>Statement Date</th>
+        <th class="text-end">Book Balance</th>
+        <th class="text-end">Statement Balance</th>
+        <th class="text-end">Difference</th>
+        <th class="no-print">Notes</th>
+        <th class="no-print text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for rec in reconciliations %}
+      <tr>
+        <td>{{ rec.account.code }} — {{ rec.account.name }}</td>
+        <td>{{ rec.statement_date.strftime('%d %b %Y') }}</td>
+        <td class="text-end amount">{{ omr(rec.book_balance) }}</td>
+        <td class="text-end amount">{{ omr(rec.statement_balance) }}</td>
+        <td class="text-end amount {% if rec.difference == 0 %}amount-credit{% else %}amount-debit{% endif %}">
+          {% if rec.difference == 0 %}
+          <i class="bi bi-check-circle-fill text-success"></i> 0.000 OMR
+          {% else %}
+          {{ omr(rec.difference) }}
+          {% endif %}
+        </td>
+        <td class="no-print small text-muted text-truncate" style="max-width:180px">{{ rec.notes or '—' }}</td>
+        <td class="no-print text-end">
+          <a href="{{ url_for('reconciliation_edit', rec_id=rec.id) }}" class="btn btn-sm btn-outline-secondary py-0">Edit</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-4">No reconciliations recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

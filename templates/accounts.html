@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Chart of Accounts{% endblock %}
+{% block page_title %}Chart of Accounts{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('account_new') }}" class="btn btn-sm btn-primary">
+  <i class="bi bi-plus-lg"></i> New Account
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="table-card">
+  <div class="px-3 py-2 border-bottom d-flex gap-2 align-items-center flex-wrap no-print">
+    <form method="get" class="d-flex gap-2 flex-wrap">
+      <input name="search" class="form-control form-control-sm" placeholder="Search code or name…" value="{{ search }}" style="width:200px">
+      <select name="type" class="form-select form-select-sm" style="width:140px">
+        <option value="">All Types</option>
+        {% for t in account_types %}
+        <option value="{{ t }}" {% if filter_type == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-sm btn-secondary">Filter</button>
+      {% if search or filter_type %}
+      <a href="{{ url_for('accounts') }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+      {% endif %}
+    </form>
+    <span class="ms-auto text-muted small">{{ accounts|length }} accounts</span>
+  </div>
+
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Account Name</th>
+        <th>Type</th>
+        <th>Normal Bal</th>
+        <th>Description</th>
+        <th class="no-print">Status</th>
+        <th class="no-print text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in accounts %}
+      <tr class="{% if not a.is_active %}text-muted{% endif %}">
+        <td class="fw-mono">{{ a.code }}</td>
+        <td>
+          {{ a.name }}
+          {% if a.parent %}<small class="text-muted ms-1">↳ {{ a.parent.name }}</small>{% endif %}
+        </td>
+        <td>
+          <span class="badge badge-{{ a.account_type.lower() }}">{{ a.account_type }}</span>
+        </td>
+        <td><span class="small text-muted">{{ a.computed_normal_balance }}</span></td>
+        <td class="text-muted small text-truncate" style="max-width:220px">{{ a.description or '—' }}</td>
+        <td class="no-print">
+          {% if a.is_active %}
+          <span class="badge bg-success-subtle text-success">Active</span>
+          {% else %}
+          <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="no-print text-end">
+          <a href="{{ url_for('account_edit', account_id=a.id) }}" class="btn btn-xs btn-outline-secondary btn-sm py-0">Edit</a>
+          <form method="post" action="{{ url_for('account_toggle', account_id=a.id) }}" class="d-inline">
+            <button class="btn btn-xs btn-sm py-0 {% if a.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+              {{ 'Deactivate' if a.is_active else 'Activate' }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-4">No accounts found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

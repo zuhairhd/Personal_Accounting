@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Income & Expense Statement{% endblock %}
+{% block page_title %}Income &amp; Expense Statement{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('export_income_expense') }}" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-download"></i> Export CSV
+</a>
+<button onclick="window.print()" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-printer"></i> Print
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Date filter -->
+<div class="table-card mb-3 no-print">
+  <div class="px-3 py-2">
+    <form method="get" class="d-flex gap-2 flex-wrap align-items-center">
+      <label class="small mb-0">From:</label>
+      <input name="from_date" type="date" class="form-control form-control-sm" value="{{ from_date }}" style="width:140px">
+      <label class="small mb-0">To:</label>
+      <input name="to_date" type="date" class="form-control form-control-sm" value="{{ to_date }}" style="width:140px">
+      <button class="btn btn-sm btn-secondary">Apply</button>
+      {% if from_date or to_date %}
+      <a href="{{ url_for('profit_loss') }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="table-card">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th style="width:80px">Code</th>
+        <th>Account</th>
+        <th class="text-end" style="width:180px">Amount (OMR)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- INCOME -->
+      <tr><td colspan="3" class="report-section-header">INCOME</td></tr>
+      {% for row in income_rows %}
+      <tr>
+        <td class="small text-muted ps-3">{{ row.account.code }}</td>
+        <td class="ps-3">{{ row.account.name }}</td>
+        <td class="text-end amount amount-credit">{{ '%.3f'|format(row.balance|float) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="text-muted small ps-3">No income recorded.</td></tr>
+      {% endfor %}
+      <tr class="report-total-row">
+        <td colspan="2" class="text-end fw-bold">Total Income</td>
+        <td class="text-end amount fw-bold">{{ omr(total_income) }}</td>
+      </tr>
+
+      <!-- EXPENSES -->
+      <tr><td colspan="3" class="report-section-header">EXPENSES</td></tr>
+      {% for row in exp_rows %}
+      <tr>
+        <td class="small text-muted ps-3">{{ row.account.code }}</td>
+        <td class="ps-3">{{ row.account.name }}</td>
+        <td class="text-end amount amount-debit">{{ '%.3f'|format(row.balance|float) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="text-muted small ps-3">No expenses recorded.</td></tr>
+      {% endfor %}
+      <tr class="report-total-row">
+        <td colspan="2" class="text-end fw-bold">Total Expenses</td>
+        <td class="text-end amount fw-bold">{{ omr(total_exp) }}</td>
+      </tr>
+
+      <!-- SURPLUS / DEFICIT -->
+      <tr class="report-grand-total-row">
+        <td colspan="2" class="text-end fw-bold">
+          {% if surplus >= 0 %}SURPLUS{% else %}DEFICIT{% endif %}
+        </td>
+        <td class="text-end amount fw-bold {% if surplus >= 0 %}text-warning{% else %}text-danger{% endif %}">
+          {{ omr(surplus) }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

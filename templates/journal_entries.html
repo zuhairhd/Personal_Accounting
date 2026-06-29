@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Journal Entries{% endblock %}
+{% block page_title %}Journal Entries{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('journal_entry_new') }}" class="btn btn-sm btn-primary">
+  <i class="bi bi-plus-lg"></i> New Entry
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="table-card">
+  <div class="px-3 py-2 border-bottom d-flex gap-2 flex-wrap align-items-center no-print">
+    <form method="get" class="d-flex gap-2 flex-wrap">
+      <input name="search" class="form-control form-control-sm" placeholder="Search ref or narration…" value="{{ search }}" style="width:180px">
+      <input name="from_date" type="date" class="form-control form-control-sm" value="{{ from_date }}" style="width:140px">
+      <input name="to_date" type="date" class="form-control form-control-sm" value="{{ to_date }}" style="width:140px">
+      <button class="btn btn-sm btn-secondary">Filter</button>
+      {% if search or from_date or to_date %}
+      <a href="{{ url_for('journal_entries') }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Reference</th>
+        <th>Narration</th>
+        <th class="text-end">Debit</th>
+        <th class="text-end">Credit</th>
+        <th class="no-print text-center">Balanced</th>
+        <th class="no-print text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for je in entries.items %}
+      <tr>
+        <td class="text-nowrap">{{ je.date.strftime('%d %b %Y') }}</td>
+        <td>
+          <a href="{{ url_for('journal_entry_detail', entry_id=je.id) }}" class="text-decoration-none fw-semibold small">
+            {{ je.reference }}
+          </a>
+        </td>
+        <td class="text-truncate" style="max-width:220px">{{ je.narration }}</td>
+        <td class="text-end amount">{{ omr(je.total_debit) }}</td>
+        <td class="text-end amount">{{ omr(je.total_credit) }}</td>
+        <td class="no-print text-center">
+          {% if je.is_balanced %}
+          <span class="badge bg-success-subtle text-success"><i class="bi bi-check-lg"></i></span>
+          {% else %}
+          <span class="badge bg-danger-subtle text-danger"><i class="bi bi-x-lg"></i></span>
+          {% endif %}
+        </td>
+        <td class="no-print text-end">
+          <a href="{{ url_for('journal_entry_edit', entry_id=je.id) }}" class="btn btn-sm btn-outline-secondary py-0">Edit</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-4">No journal entries found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  {% if entries.pages > 1 %}
+  <div class="px-3 py-2 no-print">
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        {% if entries.has_prev %}
+        <li class="page-item"><a class="page-link" href="?page={{ entries.prev_num }}&search={{ search }}&from_date={{ from_date }}&to_date={{ to_date }}">‹ Prev</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ entries.page }} of {{ entries.pages }}</span></li>
+        {% if entries.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ entries.next_num }}&search={{ search }}&from_date={{ from_date }}&to_date={{ to_date }}">Next ›</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

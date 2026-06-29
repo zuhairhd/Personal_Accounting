@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Trial Balance{% endblock %}
+{% block page_title %}Trial Balance{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('export_trial_balance') }}" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-download"></i> Export CSV
+</a>
+<button onclick="window.print()" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-printer"></i> Print
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="table-card">
+  <div class="px-3 py-2 border-bottom d-flex gap-2 flex-wrap align-items-center no-print">
+    <form method="get" class="d-flex gap-2 flex-wrap">
+      <label class="form-label small mb-0 align-self-center">From:</label>
+      <input name="from_date" type="date" class="form-control form-control-sm" value="{{ from_date }}" style="width:140px">
+      <label class="form-label small mb-0 align-self-center">To:</label>
+      <input name="to_date" type="date" class="form-control form-control-sm" value="{{ to_date }}" style="width:140px">
+      <button class="btn btn-sm btn-secondary">Apply</button>
+      {% if from_date or to_date %}
+      <a href="{{ url_for('trial_balance') }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+      {% endif %}
+    </form>
+    <span class="ms-auto">
+      {% if balanced %}
+      <span class="badge badge-balanced">Balanced ✓</span>
+      {% else %}
+      <span class="badge badge-not-balanced">NOT Balanced ✗</span>
+      {% endif %}
+    </span>
+  </div>
+
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th style="width:90px">Code</th>
+        <th>Account Name</th>
+        <th>Type</th>
+        <th class="text-end">Debit (OMR)</th>
+        <th class="text-end">Credit (OMR)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td class="small text-muted">{{ row.account.code }}</td>
+        <td>{{ row.account.name }}</td>
+        <td><span class="badge badge-{{ row.account.account_type.lower() }}">{{ row.account.account_type }}</span></td>
+        <td class="text-end amount {% if row.debit > 0 %}amount-debit{% else %}amount-zero{% endif %}">
+          {{ '%.3f'|format(row.debit|float) if row.debit > 0 else '—' }}
+        </td>
+        <td class="text-end amount {% if row.credit > 0 %}amount-credit{% else %}amount-zero{% endif %}">
+          {{ '%.3f'|format(row.credit|float) if row.credit > 0 else '—' }}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="text-center text-muted py-4">No transactions found.</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="report-total-row">
+        <td colspan="3" class="text-end fw-bold">TOTALS</td>
+        <td class="text-end amount fw-bold">{{ omr(total_debit) }}</td>
+        <td class="text-end amount fw-bold">{{ omr(total_credit) }}</td>
+      </tr>
+      {% if not balanced %}
+      <tr class="table-danger">
+        <td colspan="3" class="text-end fw-bold text-danger">DIFFERENCE</td>
+        <td colspan="2" class="text-end amount fw-bold text-danger">{{ omr(difference) }}</td>
+      </tr>
+      {% endif %}
+    </tfoot>
+  </table>
+</div>
+{% endblock %}

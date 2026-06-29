@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}General Ledger{% endblock %}
+{% block page_title %}General Ledger{% endblock %}
+
+{% block topbar_actions %}
+<button onclick="window.print()" class="btn btn-sm btn-outline-secondary no-print">
+  <i class="bi bi-printer"></i> Print
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="table-card mb-3 no-print">
+  <div class="px-3 py-2">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-sm-4">
+        <label class="form-label small mb-1">Account</label>
+        <select name="account_id" class="form-select form-select-sm">
+          <option value="">— Select Account —</option>
+          {% for a in all_accounts %}
+          <option value="{{ a.id }}" {% if account_id == a.id %}selected{% endif %}>
+            {{ a.code }} — {{ a.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-3">
+        <label class="form-label small mb-1">From Date</label>
+        <input name="from_date" type="date" class="form-control form-control-sm" value="{{ from_date }}">
+      </div>
+      <div class="col-sm-3">
+        <label class="form-label small mb-1">To Date</label>
+        <input name="to_date" type="date" class="form-control form-control-sm" value="{{ to_date }}">
+      </div>
+      <div class="col-sm-2">
+        <button class="btn btn-sm btn-secondary w-100">View</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if selected_account %}
+<div class="table-card">
+  <div class="px-3 py-2 border-bottom d-flex justify-content-between">
+    <div>
+      <strong>{{ selected_account.code }} — {{ selected_account.name }}</strong>
+      <span class="badge badge-{{ selected_account.account_type.lower() }} ms-2">{{ selected_account.account_type }}</span>
+      <span class="badge bg-light text-dark ms-1">Normal: {{ selected_account.computed_normal_balance }}</span>
+    </div>
+  </div>
+  <table class="table table-sm mb-0">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Reference</th>
+        <th>Narration / Description</th>
+        <th class="text-end">Debit</th>
+        <th class="text-end">Credit</th>
+        <th class="text-end">Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if from_date %}
+      <tr class="table-light">
+        <td colspan="5" class="text-muted small">Opening Balance</td>
+        <td class="text-end amount">{{ '%.3f'|format(opening_balance|float) }}</td>
+      </tr>
+      {% endif %}
+      {% for row in ledger_rows %}
+      <tr>
+        <td class="text-nowrap small">{{ row.date.strftime('%d %b %Y') }}</td>
+        <td><a href="#" class="text-decoration-none small">{{ row.reference }}</a></td>
+        <td class="small">
+          {{ row.narration }}
+          {% if row.description %}<span class="text-muted"> · {{ row.description }}</span>{% endif %}
+        </td>
+        <td class="text-end amount {% if row.debit > 0 %}amount-debit{% else %}amount-zero{% endif %}">
+          {{ '%.3f'|format(row.debit|float) if row.debit > 0 else '—' }}
+        </td>
+        <td class="text-end amount {% if row.credit > 0 %}amount-credit{% else %}amount-zero{% endif %}">
+          {{ '%.3f'|format(row.credit|float) if row.credit > 0 else '—' }}
+        </td>
+        <td class="text-end amount fw-semibold">{{ '%.3f'|format(row.balance|float) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-3">No transactions in this period.</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="report-total-row">
+        <td colspan="5" class="text-end fw-bold">Closing Balance</td>
+        <td class="text-end amount fw-bold">{{ omr(closing_balance) }}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+{% elif account_id %}
+<div class="alert alert-warning">Account not found.</div>
+{% else %}
+<div class="alert alert-info">Select an account above to view its ledger.</div>
+{% endif %}
+{% endblock %}
